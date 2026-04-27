@@ -1,21 +1,25 @@
-const Discord = require("discord.js")
+const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
 
-const config = require('../../config.json')
+const config = {
+  eventas: process.env.EVENTAS,
+  colorpredeterminado: process.env.COLOR,
+  feedback: process.env.FEEDBACK
+};
 
 module.exports = {
   name: "027woofer", // Coloque o nome do comando
   description: "📦​ | Entrega 027 Woofer", // Coloque a descrição do comando
-  type: Discord.ApplicationCommandType.ChatInput,
+  type: ApplicationCommandType.ChatInput,
   options: [
         {
             name: "key",
             description: "Ingrese la/s key(s).",
-            type: Discord.ApplicationCommandOptionType.String,
+            type: ApplicationCommandOptionType.String,
             required: true,
         }
     ],
 
-  run: async (client, interaction) => {
+           execute: async (interaction) => {
 
                 // ID del rol requerido
                 const requiredRoleId = `${config.eventas}`;
@@ -28,11 +32,11 @@ module.exports = {
           return interaction.reply({ content: "<:warninghost:1383935369275379874> | No tienes permiso para usar este comando.", ephemeral: true });
         }
 
-    let bot = client.user.username;
-    let avatar_bot = client.user.displayAvatarURL({ dynamic: true });
+    let bot = interaction.client.user.username;
+let avatar_bot = interaction.client.user.displayAvatarURL();
     let key = interaction.options.getString("key");
 
-    let embed = new Discord.EmbedBuilder()
+      let embed = new EmbedBuilder()
       .setTitle("¡Gracias por tu compra! 🎉")
       .setColor(config.colorpredeterminado)
       .setTimestamp()
