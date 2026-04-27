@@ -1,16 +1,4 @@
-const Discord = require("discord.js");
-const path = require('path')
-const sqlite3 = require('sqlite3').verbose();
-const config = {
-  token: process.env.TOKEN,
-  ownerId: "1166776075733446875",
-  staffsoporte: "1498391254835396687",
-  colorpredeterminado: "#000001",
-  ticket: {
-    ticket1: { categoria: "1498391257154588700" },
-    ticket2: { categoria: "1498391257154588700" },
-    ticket3: { categoria: "1498391257154588700" }
-  }
+
 };
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const transcript = require('discord-html-transcripts');
@@ -175,7 +163,7 @@ client.on('ready', async () => {
 
 client.slashCommands = new Discord.Collection()
 
-client.login(config.token)
+client.login(process.env.TOKEN)
 
 require('./handler')(client)
 
