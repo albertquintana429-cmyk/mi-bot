@@ -1,47 +1,48 @@
-const Discord = require("discord.js")
+const { ApplicationCommandType, EmbedBuilder } = require("discord.js");
 
-const config = require('../../config.json')
+const config = {
+  eventas: process.env.EVENTAS,
+  colorpredeterminado: process.env.COLOR,
+  feedback: process.env.FEEDBACK
+};
 
 module.exports = {
-  name: "rwboost", // Coloque o nome do comando
-  description: "📦 | Recompensas por Boostear", // Coloque a descrição do comando
-  type: Discord.ApplicationCommandType.ChatInput,
+  name: "rwboost",
+  description: "📦 | Recompensas por Boostear",
+  type: ApplicationCommandType.ChatInput,
 
-  run: async (client, interaction) => {
+  execute: async (interaction) => {
+    const requiredRoleId = `${config.eventas}`;
+    const member = interaction.member;
+    const hasRole = member.roles.cache.has(requiredRoleId);
 
-                // ID del rol requerido
-                const requiredRoleId = `${config.eventas}`;
+    if (!hasRole) {
+      return interaction.reply({
+        content: "<:warninghost:1383935369275379874> | No tienes permiso para usar este comando.",
+        ephemeral: true
+      });
+    }
 
-                // Verificar si el usuario tiene el rol
-        const member = interaction.member;
-        const hasRole = member.roles.cache.has(requiredRoleId);
-    
-        if (!hasRole) {
-          return interaction.reply({ content: "<:warninghost:1383935369275379874> | No tienes permiso para usar este comando.", ephemeral: true });
-        }
+    const bot = interaction.client.user.username;
+    const avatar_bot = interaction.client.user.displayAvatarURL();
 
-    let bot = client.user.username;
-    let avatar_bot = client.user.displayAvatarURL({ dynamic: true });
-
-    let embed = new Discord.EmbedBuilder()
+    const embed = new EmbedBuilder()
       .setTitle("¡Gracias por tus boosts! 🎉")
       .setColor(config.colorpredeterminado)
       .setTimestamp()
-      .setThumbnail("https://media.discordapp.net/attachments/1387582521662771363/1411738364142420069/2184-heart-boost.png?ex=68b5bf4e&is=68b46dce&hm=4900279f72b37eaf3d014567c57f311218a93618e5a6f7ddcdb0d26d66c84acd&=&format=webp&quality=lossless")
+      .setThumbnail("https://media.discordapp.net/attachments/1387582521662771363/1411738364142420069/2184-heart-boost.png")
       .setFooter({ text: bot, iconURL: avatar_bot })
       .setDescription(
         `**•  __Producto__:** Reward Boost 🔮\n\n` +
         `**•  Link:** ||https://gofile.io/d/g0W8UD||\n\n` +
-        `Déjanos por favor un ${config.feedback} para poder seguir creciendo! <a:blackverify:1360058374456348846><:coramanos:1387181348069838942>`
+        `Déjanos por favor un ${config.feedback} para poder seguir creciendo!`
       );
 
-    // 1. Enviar mensaje ephemeral al usuario
     await interaction.reply({
       content: "✅ Producto entregado exitosamente.",
       ephemeral: true
     });
 
-    // 2. Enviar embed públicamente al canal
     await interaction.channel.send({ embeds: [embed] });
   }
-}
+};
