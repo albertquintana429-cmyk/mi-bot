@@ -1,61 +1,61 @@
-const Discord = require("discord.js");
-const config = require('../../config.json');
+const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
+
+const config = {
+  ownerId: process.env.OWNER_ID,
+  eventas: process.env.EVENTAS,
+  colorpredeterminado: process.env.COLOR,
+  feedback: process.env.FEEDBACK
+};
 
 module.exports = {
-  name: "stopped-external-basic", // Nombre del comando
-  description: "📦​ | Entrega Stopped External Basic", // Descripción
-  type: Discord.ApplicationCommandType.ChatInput,
+  name: "stopped-external-basic",
+  description: "📦​ | Entrega Stopped External Basic",
+  type: ApplicationCommandType.ChatInput,
   options: [
     {
       name: "key",
       description: "Ingrese la/s key(s).",
-      type: Discord.ApplicationCommandOptionType.String,
+      type: ApplicationCommandOptionType.String,
       required: true,
     }
   ],
 
-  run: async (client, interaction) => {
-    // Verificar si el usuario tiene el rol requerido
-   const requiredRoleId = config.eventas;
-const member = interaction.member;
+  execute: async (interaction) => {
+    const member = interaction.member;
 
-if (
-  interaction.user.id !== config.ownerId &&
-  !member.roles.cache.has(requiredRoleId)
-) {
-  return interaction.reply({ 
-    content: "<:warninghost:1383935369275379874> | No tienes permiso para usar este comando.", 
-    ephemeral: true 
-  });
-}
+    if (
+      interaction.user.id !== config.ownerId &&
+      !member.roles.cache.has(config.eventas)
+    ) {
+      return interaction.reply({
+        content: "<:warninghost:1383935369275379874> | No tienes permiso para usar este comando.",
+        ephemeral: true
+      });
+    }
 
-    // Datos
-    const bot = client.user.username;
-    const avatar_bot = client.user.displayAvatarURL({ dynamic: true });
+    const bot = interaction.client.user.username;
+    const avatar_bot = interaction.client.user.displayAvatarURL();
     const key = interaction.options.getString("key");
 
-    // Embed de entrega
-    const embed = new Discord.EmbedBuilder()
+    const embed = new EmbedBuilder()
       .setTitle("¡Gracias por tu compra! 🎉")
       .setColor(config.colorpredeterminado)
       .setTimestamp()
-      .setThumbnail("https://cdn.discordapp.com/attachments/1394073244323287212/1411607574557622352/image.png?ex=68b54580&is=68b3f400&hm=7c767d233529e7ae53b7878eb1212adb83eb2518fbb3295f9b2b894b7f6c5940&")
+      .setThumbnail("https://cdn.discordapp.com/attachments/1394073244323287212/1411607574557622352/image.png")
       .setFooter({ text: bot, iconURL: avatar_bot })
       .setDescription(
         `**•  __Producto__:** Stopped External Basic <:stopped:1376273781001158756>\n\n` +
         `**•  Key(s):** ||${key}||\n` +
         `**•  Download:** [Haz Click Aqui](https://discord.com/channels/1333382019211853854/1394928009399631972)\n` +
         `**•  Tutorial:** ||https://www.youtube.com/watch?v=NaLRszLuXKk||\n\n` +
-        `Déjanos por favor un ${config.feedback} para poder seguir creciendo! <a:blackverify:1360058374456348846><:coramanos:1387181348069838942>`
+        `Déjanos por favor un ${config.feedback} para poder seguir creciendo!`
       );
 
-    // 1. Enviar mensaje ephemeral al usuario
     await interaction.reply({
       content: "✅ Producto entregado exitosamente.",
       ephemeral: true
     });
 
-    // 2. Enviar embed públicamente al canal
     await interaction.channel.send({ embeds: [embed] });
   }
-}
+};
