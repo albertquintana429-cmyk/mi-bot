@@ -1,58 +1,58 @@
-const Discord = require("discord.js");
-const config = require('../../config.json');
+const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
+
+const config = {
+  eventas: process.env.EVENTAS,
+  colorpredeterminado: process.env.COLOR,
+  feedback: process.env.FEEDBACK
+};
 
 module.exports = {
-  name: "dazn", // Nombre del comando
-  description: "📦​ | Entrega Dazn", // Descripción
-  type: Discord.ApplicationCommandType.ChatInput,
+  name: "dazn",
+  description: "📦​ | Entrega Dazn",
+  type: ApplicationCommandType.ChatInput,
   options: [
     {
       name: "account",
       description: "Ingrese la/s account(s).",
-      type: Discord.ApplicationCommandOptionType.String,
+      type: ApplicationCommandOptionType.String,
       required: true,
     }
   ],
 
-  run: async (client, interaction) => {
-    // Verificar si el usuario tiene el rol requerido
+  execute: async (interaction) => {
     const requiredRoleId = `${config.eventas}`;
     const member = interaction.member;
     const hasRole = member.roles.cache.has(requiredRoleId);
 
     if (!hasRole) {
-      return interaction.reply({ 
-        content: "<:warninghost:1383935369275379874> | No tienes permiso para usar este comando.", 
-        ephemeral: true 
+      return interaction.reply({
+        content: "<:warninghost:1383935369275379874> | No tienes permiso para usar este comando.",
+        ephemeral: true
       });
     }
 
-    // Datos
-    const bot = client.user.username;
-    const avatar_bot = client.user.displayAvatarURL({ dynamic: true });
+    const bot = interaction.client.user.username;
+    const avatar_bot = interaction.client.user.displayAvatarURL();
     const account = interaction.options.getString("account");
 
-    // Embed de entrega
-    const embed = new Discord.EmbedBuilder()
+    const embed = new EmbedBuilder()
       .setTitle("¡Gracias por tu compra! 🎉")
       .setColor(config.colorpredeterminado)
       .setTimestamp()
-      .setThumbnail("https://cdn.discordapp.com/attachments/1337713438813716480/1387854745116606565/images.png?ex=68b53634&is=68b3e4b4&hm=d2e078c9ad65340979c1b4f310664586e35db95f30a2bb71949a39ae2093818e&")
+      .setThumbnail("https://cdn.discordapp.com/attachments/1337713438813716480/1387854745116606565/images.png")
       .setFooter({ text: bot, iconURL: avatar_bot })
       .setDescription(
         `**•  __Producto__:** Dazn Account\n\n` +
         `**•  Account(s):** ||${account}||\n` +
         `**•  Login:** [Haz Click Aqui](https://www.dazn.com/signin)\n\n` +
-        `Déjanos por favor un ${config.feedback} para poder seguir creciendo! <a:blackverify:1360058374456348846><:coramanos:1387181348069838942>`
+        `Déjanos por favor un ${config.feedback} para poder seguir creciendo!`
       );
 
-    // 1. Enviar mensaje ephemeral al usuario
     await interaction.reply({
       content: "✅ Producto entregado exitosamente.",
       ephemeral: true
     });
 
-    // 2. Enviar embed públicamente al canal
     await interaction.channel.send({ embeds: [embed] });
   }
-}
+};
