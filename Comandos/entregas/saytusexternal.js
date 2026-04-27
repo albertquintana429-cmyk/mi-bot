@@ -1,58 +1,59 @@
-const Discord = require("discord.js")
+const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
 
-const config = require('../../config.json')
+const config = {
+  eventas: process.env.EVENTAS,
+  colorpredeterminado: process.env.COLOR,
+  feedback: process.env.FEEDBACK
+};
 
 module.exports = {
-  name: "saytusexternal", // Coloque o nome do comando
-  description: "📦​ | Entrega Saytus External", // Coloque a descrição do comando
-  type: Discord.ApplicationCommandType.ChatInput,
+  name: "saytusexternal",
+  description: "📦​ | Entrega Saytus External",
+  type: ApplicationCommandType.ChatInput,
   options: [
-        {
-            name: "key",
-            description: "Ingrese la/s key(s).",
-            type: Discord.ApplicationCommandOptionType.String,
-            required: true,
-        }
-    ],
+    {
+      name: "key",
+      description: "Ingrese la/s key(s).",
+      type: ApplicationCommandOptionType.String,
+      required: true,
+    }
+  ],
 
-  run: async (client, interaction) => {
+  execute: async (interaction) => {
+    const requiredRoleId = `${config.eventas}`;
+    const member = interaction.member;
+    const hasRole = member.roles.cache.has(requiredRoleId);
 
-                // ID del rol requerido
-                const requiredRoleId = `${config.eventas}`;
+    if (!hasRole) {
+      return interaction.reply({
+        content: "<:warninghost:1383935369275379874> | No tienes permiso para usar este comando.",
+        ephemeral: true
+      });
+    }
 
-                // Verificar si el usuario tiene el rol
-        const member = interaction.member;
-        const hasRole = member.roles.cache.has(requiredRoleId);
-    
-        if (!hasRole) {
-          return interaction.reply({ content: "<:warninghost:1383935369275379874> | No tienes permiso para usar este comando.", ephemeral: true });
-        }
+    const bot = interaction.client.user.username;
+    const avatar_bot = interaction.client.user.displayAvatarURL();
+    const key = interaction.options.getString("key");
 
-    let bot = client.user.username;
-    let avatar_bot = client.user.displayAvatarURL({ dynamic: true });
-    let key = interaction.options.getString("key");
-
-    let embed = new Discord.EmbedBuilder()
+    const embed = new EmbedBuilder()
       .setTitle("¡Gracias por tu compra! 🎉")
       .setColor(config.colorpredeterminado)
       .setTimestamp()
-      .setThumbnail("https://cdn.discordapp.com/attachments/1399443054535901235/1403975119033860106/saytus-removebg-preview_2.png?ex=68b530b8&is=68b3df38&hm=a329c620d574eee6f807b2ef52509e3b52441c22d22b902b8f257f4efac8ed24&")
+      .setThumbnail("https://cdn.discordapp.com/attachments/1399443054535901235/1403975119033860106/saytus-removebg-preview_2.png")
       .setFooter({ text: bot, iconURL: avatar_bot })
       .setDescription(
         `**•  __Producto__:** Saytus External <:st21:1403963874352300082>\n\n` +
         `**•  Key(s):** ||${key}||\n` +
         `**•  Download:** [Haz Click Aqui](https://discord.com/channels/1333382019211853854/1394928009399631972)\n` +
-        `**•  Tutorial:** ||https://cdn.discordapp.com/attachments/1322680676532752536/1329677774646018130/saytus_external.mp4?ex=68b5296d&is=68b3d7ed&hm=fcfbab00843d87da847dea55c43d5618d62ca2aa100145cb95a5709c70d1c036&||\n\n` +
-        `Déjanos por favor un ${config.feedback} para poder seguir creciendo! <a:blackverify:1360058374456348846><:coramanos:1387181348069838942>`
+        `**•  Tutorial:** ||https://cdn.discordapp.com/attachments/1322680676532752536/1329677774646018130/saytus_external.mp4||\n\n` +
+        `Déjanos por favor un ${config.feedback} para poder seguir creciendo!`
       );
 
-    // 1. Enviar mensaje ephemeral al usuario
     await interaction.reply({
       content: "✅ Producto entregado exitosamente.",
       ephemeral: true
     });
 
-    // 2. Enviar embed públicamente al canal
     await interaction.channel.send({ embeds: [embed] });
   }
-}
+};
