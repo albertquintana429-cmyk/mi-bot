@@ -1,13 +1,13 @@
-const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
+const { ApplicationCommandType, EmbedBuilder } = require('discord.js');
 
 module.exports = {
   name: "ping",
   description: "📡 | Muestra la latencia del bot",
   type: ApplicationCommandType.ChatInput,
 
-  run: async (client, interaction) => {
+  execute: async (interaction) => {
     const latency = Date.now() - interaction.createdTimestamp;
-    const apiPing = client.ws.ping;
+    const apiPing = interaction.client.ws.ping;
 
     const embed = new EmbedBuilder()
       .setTitle("🏓 Pong!")
